@@ -1,3 +1,5 @@
+import spacy
+spacy.load('en_core_web_sm') 
 from chatterbot import ChatBot
 from chatterbot.trainers import ListTrainer
 
@@ -87,10 +89,12 @@ trainer.train([
 print("Hi! I'm TechBuddy. Ask me about AI, Scratch, web development, robotics, EA Sports, or app making with MIT App Inventor!")
 while True:
     try:
-        user_input = input("You: ")
-        if user_input.lower() in ("quit", "exit", "bye"):
+        user_input = input("You: ").strip()
+        if user_input.lower() in ("quit", "exit", "bye", "d"):
+            print("Goodbye! Thanks for chatting with TechBuddy. Installation successful!")
             break
         response = chatbot.get_response(user_input)
         print("TechBuddy:", response)
     except (KeyboardInterrupt, EOFError):
+        print("\nGoodbye! Thanks for chatting with TechBuddy.")
         break
