@@ -1,0 +1,15 @@
+{
+  "files": {
+    "main.css": "/Q-A-buddy/static/css/main.5a7fcc41.css",
+    "main.js": "/Q-A-buddy/static/js/main.3901717d.js",
+    "static/js/453.8ab44547.chunk.js": "/Q-A-buddy/static/js/453.8ab44547.chunk.js",
+    "index.html": "/Q-A-buddy/index.html",
+    "main.5a7fcc41.css.map": "/Q-A-buddy/static/css/main.5a7fcc41.css.map",
+    "main.3901717d.js.map": "/Q-A-buddy/static/js/main.3901717d.js.map",
+    "453.8ab44547.chunk.js.map": "/Q-A-buddy/static/js/453.8ab44547.chunk.js.map"
+  },
+  "entrypoints": [
+    "static/css/main.5a7fcc41.css",
+    "static/js/main.3901717d.js"
+  ]
+}
