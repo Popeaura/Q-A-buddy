@@ -1,39 +1,73 @@
-import React, { useState } from 'react';
-import axios from 'axios';
+import React, { useState, useEffect } from 'react';
+import './App.css';
 
 function App() {
-  const [message, setMessage] = useState('');
-  const [chat, setChat] = useState([]);
+  const [messages, setMessages] = useState([]);
+  const [input, setInput] = useState('');
+  const [isChatActive, setIsChatActive] = useState(true);
 
-  const sendMessage = async () => {
-    if (!message) return;
+  // Show welcome message and instructions on first render
+  useEffect(() => {
+    setMessages([{
+      sender: 'bot',
+      text: "👋 Welcome to TechBuddy!\nI can answer questions about AI, Scratch, web development, robotics, EA Sports, and MIT App Inventor.\nTo quit, type 'quit', 'exit', or 'bye'."
+    }]);
+  }, []);
+
+  const handleSend = async () => {
+    if (!isChatActive || !input.trim()) return;
+
+    const userInput = input;
+    setInput('');
+
+    // Add user message
+    setMessages(msgs => [...msgs, { sender: 'user', text: userInput }]);
+
     try {
-      const response = await axios.post('/chat', { message });
-      setChat([...chat, { text: message, isUser: true }, { text: response.data.response, isUser: false }]);
-      setMessage('');
+      const response = await fetch('http://localhost:5000/api/chat', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ text: userInput })
+      });
+      const botReply = await response.text();
+
+      // If bot says "quit", end the chat
+      if (botReply === "quit") {
+        setMessages(msgs => [...msgs, { sender: 'bot', text: "👋 Goodbye! Thanks for chatting with TechBuddy." }]);
+        setIsChatActive(false);
+      } else {
+        setMessages(msgs => [...msgs, { sender: 'bot', text: botReply }]);
+      }
     } catch (error) {
-      console.error('Error sending message:', error);
+      setMessages(msgs => [...msgs, { sender: 'bot', text: "Sorry, something went wrong." }]);
     }
   };
 
   return (
-    <div style={{ maxWidth: '600px', margin: '0 auto', padding: '20px' }}>
-      <h2>Chat with TechBuddy</h2>
-      <div style={{ height: '300px', border: '1px solid #ccc', overflowY: 'scroll', marginBottom: '10px', padding: '10px' }}>
-        {chat.map((msg, idx) => (
-          <div key={idx} style={{ textAlign: msg.isUser ? 'right' : 'left', color: msg.isUser ? 'blue' : 'green', margin: '5px 0' }}>
-            {msg.text}
+    <div className="App">
+      <div className="chatbox">
+        {messages.map((msg, index) => (
+          <div key={index} className={`message ${msg.sender}`}>
+            <strong>{msg.sender === 'user' ? 'You' : 'TechBuddy'}:</strong> {msg.text}
           </div>
         ))}
       </div>
-      <input
-        type="text"
-        value={message}
-        onChange={(e) => setMessage(e.target.value)}
-        onKeyPress={(e) => e.key === 'Enter' && sendMessage()}
-        style={{ width: '70%', padding: '10px', marginRight: '10px' }}
-      />
-      <button onClick={sendMessage} style={{ padding: '10px' }}>Send</button>
+      {isChatActive ? (
+        <div className="input-area">
+          <input
+            type="text"
+            value={input}
+            onChange={(e) => setInput(e.target.value)}
+            onKeyPress={(e) => e.key === 'Enter' && handleSend()}
+            placeholder="Type your message..."
+          />
+          <button onClick={handleSend}>Send</button>
+        </div>
+      ) : (
+        <div className="chat-ended">
+          The chat has ended. Refresh the page to start again.
+        </div>
+      )}
     </div>
   );
 }
